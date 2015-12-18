@@ -1132,6 +1132,7 @@ class Arrow(Patch):
 class FancyArrow(Polygon):
     """
     Like Arrow, but lets you set head width and head height independently.
+    The width of the tail can be set at the base and below the head.
     """
 
     _edge_default = True
@@ -1142,7 +1143,8 @@ class FancyArrow(Polygon):
     @docstring.dedent_interpd
     def __init__(self, x, y, dx, dy, width=0.001, length_includes_head=False,
                  head_width=None, head_length=None, shape='full', overhang=0,
-                 head_starts_at_zero=False, **kwargs):
+                 head_starts_at_zero=False, width_base=None, width_top=None,
+                 **kwargs):
         """
         Constructor arguments
           *width*: float (default: 0.001)
@@ -1167,15 +1169,26 @@ class FancyArrow(Polygon):
           *head_starts_at_zero*: [True | False] (default: False)
             if True, the head starts being drawn at coordinate 0
             instead of ending at coordinate 0.
+            
+          *width_base*: float (default: width)
+            width of full arrow tail
+            
+          *width_top*: float (default: width)
+            width of full arrow tail
+
 
         Other valid kwargs (inherited from :class:`Patch`) are:
         %(Patch)s
 
         """
         if head_width is None:
-            head_width = 20 * width
+            head_width = 20 * width_top
         if head_length is None:
             head_length = 1.5 * head_width
+        if width_base is None:
+            width_base = width
+        if width_top is None:
+            width_top = width
 
         distance = np.hypot(dx, dy)
 
@@ -1187,12 +1200,13 @@ class FancyArrow(Polygon):
             verts = []  # display nothing if empty
         else:
             # start by drawing horizontal arrow, point at (0,0)
-            hw, hl, hs, lw = head_width, head_length, overhang, width
+            hw, hl, hs = head_width, head_length, overhang
+            wb, wt = width_base, width_top
             left_half_arrow = np.array([
                 [0.0, 0.0],                  # tip
                 [-hl, -hw / 2.0],             # leftmost
-                [-hl * (1 - hs), -lw / 2.0],  # meets stem
-                [-length, -lw / 2.0],          # bottom left
+                [-hl * (1 - hs), -wt / 2.0],  # meets stem
+                [-length, -wb / 2.0],          # bottom left
                 [-length, 0],
             ])
             # if we're not including the head, shift up by head length
