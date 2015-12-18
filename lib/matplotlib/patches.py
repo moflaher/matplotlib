@@ -1181,14 +1181,14 @@ class FancyArrow(Polygon):
         %(Patch)s
 
         """
-        if head_width is None:
-            head_width = 20 * width_top
-        if head_length is None:
-            head_length = 1.5 * head_width
         if width_base is None:
             width_base = width
         if width_top is None:
             width_top = width
+        if head_width is None:
+            head_width = 20 * width_top
+        if head_length is None:
+            head_length = 1.5 * head_width
 
         distance = np.hypot(dx, dy)
 
